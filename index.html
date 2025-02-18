@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>AR.js Solar System</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.2/aframe/build/aframe-ar.min.js"></script>
+</head>
+<body style="margin: 0; overflow: hidden;">
+  <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; performanceMode: true; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+    <a-assets>
+      <!-- Add GLB files for each planet -->
+      <a-asset-item id="sun" src="sun.glb"></a-asset-item>
+      <a-asset-item id="mercury" src="mercury.glb"></a-asset-item>
+      <a-asset-item id="venus" src="venus.glb"></a-asset-item>
+      <a-asset-item id="earth" src="earth.glb"></a-asset-item>
+      <a-asset-item id="mars" src="mars.glb"></a-asset-item>
+      <!-- Add more planets here -->
+    </a-assets>
+  
+    <a-marker preset="hiro" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="5">
+      <!-- Sun at the center -->
+      <a-gltf-model src="#sun" position="0 0 0" scale="2 2 2"></a-gltf-model>
+
+      <!-- Planets orbiting the sun -->
+      <a-entity id="mercury-entity" gltf-model="#mercury" animation__orbit="property: position; from: 2 0 0; to: -2 0 0; dur: 5000; easing: linear; loop: true;"></a-entity>
+
+      <a-entity id="venus-entity" gltf-model="#venus" animation__orbit="property: position; from: 3 0 0; to: -3 0 0; dur: 8000; easing: linear; loop: true;"></a-entity>
+
+      <a-entity id="earth-entity" gltf-model="#earth" animation__orbit="property: position; from: 4 0 0; to: -4 0 0; dur: 10000; easing: linear; loop: true;"></a-entity>
+
+      <a-entity id="mars-entity" gltf-model="#mars" animation__orbit="property: position; from: 5 0 0; to: -5 0 0; dur: 12000; easing: linear; loop: true;"></a-entity>
+
+      <!-- Add more planet entities here with unique IDs and animations -->
+    </a-marker>
+  
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    // Animate planets with smooth circular orbits using JS
+    AFRAME.registerComponent('planet-orbit', {
+      schema: {
+        radius: {type: 'number', default: 2},
+        speed: {type: 'number', default: 0.001}
+      },
+      tick: function (time, timeDelta) {
+        const angle = time * this.data.speed;
+        this.el.object3D.position.set(Math.cos(angle) * this.data.radius, 0, Math.sin(angle) * this.data.radius);
+        this.el.object3D.rotation.y += 0.005; // Planet self-rotation
+      }
+    });
+
+    // Assign orbits to each planet
+    document.getElementById('mercury-entity').setAttribute('planet-orbit', 'radius: 2; speed: 0.002');
+    document.getElementById('venus-entity').setAttribute('planet-orbit', 'radius: 3; speed: 0.0015');
+    document.getElementById('earth-entity').setAttribute('planet-orbit', 'radius: 4; speed: 0.001');
+    document.getElementById('mars-entity').setAttribute('planet-orbit', 'radius: 5; speed: 0.0008');
+    // Add more planets with appropriate radius and speed
+  </script>
+</body>
+</html>
